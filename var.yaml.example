@@ -1,40 +1,79 @@
 tetrate:
-  apiUser: adamzwickey
-  apiKey: xxxxxxxxxxxxx
-  registry: gcr.io/abz-env
-  skipImages: false
+  apiUser: xxxx
+  apiKey: xxxx
+  registry: gcr.io/xxxx  #in this version its assumed mgmt plane is in GCP
 k8s:
   istioCertDir: /Users/zwickey/.getistio/istio/official/1.7.5/samples/certs/
   bookinfoCertDir: /Users/zwickey/tools/certbot/certs/live/tetrate.zwickey.net/
 gcp:
   accountJsonKey: /Users/zwickey/cloud/gcp/key.json 
-  env: abz-env
+  env: xxxx
+  enabled: true # this only controls workload clusters
+  skipImages: true
   acme:
     email: adam@tetrate.io
-    dnsZone: zwickey.net
-    dnsZoneId: zwickey-net-zone
-  mgmt:
-    clusterName: tsb-mgmt
+    dnsZone: xxxx
+    dnsZoneId: xxxx
+  mgmt: #in this version its assumed mgmt plane is in GCP
+    deploy: true
+    clusterName: xxxx
     region: us-east1
     machineType: e2-standard-2
-    fqdn: tsb.demo.zwickey.net
-    username: admin
-    password: admin
+    fqdn: example.com
+    username: xxx
+    password: xxx
+    network: projects/abz-env/global/networks/demo
+    subNetwork: projects/abz-env/regions/us-east1/subnetworks/demo
   workload1:
-    clusterName: gke-cluster-1
+    deploy: true
+    clusterName: xxxx
     region: us-east1
     machineType: e2-standard-2
+    network: projects/abz-env/global/networks/demo
+    subNetwork: projects/abz-env/regions/us-east1/subnetworks/demo
   workload2:
-    clusterName: gke-cluster-2
+    deploy: true
+    clusterName: xxxx
     region: us-west1
     machineType: e2-standard-2
+    network: projects/abz-env/global/networks/demo
+    subNetwork: projects/abz-env/regions/demo/subnetworks/demo
   vm:
+    deploy: true
     name: ratings-vm
     networkZone: us-east1-b
-    network: default
+    network: projects/abz-env/regions/us-east1/subnetworks/demo
     tag: ratings
     sshUser: zwickey
     # Format is <username:ssh-rsa key>
-    gcpPublicKey: "xxxxx:ssh-rsa\ xxx\ xxxx@xxxx"
+    gcpPublicKey: "zwickey:ssh-rsa\ xxxxxx zwickey@Adams-MBP"
+aws:
+  enabled: true
+  skipImages: true
+  workload1:
+    deploy: true
+    clusterName: xxxx
+    region: us-east-2
+  workload2:
+    deploy: false
+    clusterName: xxxx
+    region: us-west-1
+azure:
+  enabled: true
+  skipImages: true
+  subscription: xxxx
+  workload1:
+    deploy: true
+    clusterName: xxxx
+    resourceGroup: abz-rg-east
+    region: eastus
+  workload2:
+    deploy: false
+    clusterName: xxxx
+    resourceGroup: abz-rg-west
+    region: westus
 bookinfo:
-  fqdn: bookinfo.tetrate.zwickey.net
+  fqdn: example.com
+keycloak:
+  deploy: false
+  fqdn: keycloak.example.com
