@@ -13,8 +13,8 @@ then
     --name $(yq r $VARS_YAML aws.workload1.clusterName)
 
   source ./scripts/onboard-to-mp.sh \
-    $(yq r $VARS_YAML gcp.workload1.clusterName) \
-    $(yq r $VARS_YAML gcp.workload1.region)
+    $(yq r $VARS_YAML aws.workload1.clusterName) \
+    $(yq r $VARS_YAML aws.workload1.region)
 
   #AWS Context
   aws eks --region $(yq r $VARS_YAML aws.workload1.region) \
@@ -38,8 +38,8 @@ then
     update-kubeconfig --name $(yq r $VARS_YAML aws.workload2.clusterName)
 
   source ./scripts/onboard-to-mp.sh \
-    $(yq r $VARS_YAML gcp.workload2.clusterName) \
-    $(yq r $VARS_YAML gcp.workload2.region)
+    $(yq r $VARS_YAML aws.workload2.clusterName) \
+    $(yq r $VARS_YAML aws.workload2.region)
 
   #AWS Context
   aws eks --region $(yq r $VARS_YAML aws.workload2.region) \

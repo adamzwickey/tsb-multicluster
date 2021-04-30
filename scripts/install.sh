@@ -40,4 +40,11 @@ else
   echo "Skipping Azure Workload clusters"
 fi
 
-
+KEYCLOAK_ENABLED=$(yq r $VARS_YAML keycloak.deploy)
+if [ "$KEYCLOAK_ENABLED" = "true" ];
+then
+  echo "Deploying Keycloak"
+  source ./scripts/deploy-keycloak.sh
+else
+  echo "Skipping Keycloak Deployment"
+fi

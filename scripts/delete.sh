@@ -30,7 +30,7 @@ then
   echo "Destroying $(yq r $VARS_YAML aws.workload1.clusterName)..."
   rapture assume tetrate-test/admin
   eksctl delete cluster --region $(yq r $VARS_YAML aws.workload1.region) \
-    --name $(yq r $VARS_YAML aws.workload1.clusterName)
+    --name $(yq r $VARS_YAML aws.workload1.clusterName) --wait
 else
   echo "Skipping $(yq r $VARS_YAML aws.workload1.clusterName)"
 fi
@@ -40,12 +40,30 @@ then
   echo "Destroying $(yq r $VARS_YAML aws.workload2.clusterName)..."
   rapture assume tetrate-test/admin
   eksctl delete cluster --region $(yq r $VARS_YAML aws.workload2.region) \
-    --name $(yq r $VARS_YAML aws.workload2.clusterName)
+    --name $(yq r $VARS_YAML aws.workload2.clusterName) --wait
 else
   echo "Skipping $(yq r $VARS_YAML aws.workload2.clusterName)"
 fi
 
-#AZURE
+#Azure
+ENABLED=$(yq r $VARS_YAML azure.workload1.deploy)
+if [ "$ENABLED" = "true" ];
+then
+  echo "Destroying $(yq r $VARS_YAML azure.workload1.clusterName)..."
+  az aks delete --resource-group $(yq r $VARS_YAML azure.workload1.resourceGroup) \
+    --name $(yq r $VARS_YAML azure.workload1.clusterName) --verbose
+else
+  echo "Skipping $(yq r $VARS_YAML azure.workload1.clusterName)"
+fi
+ENABLED=$(yq r $VARS_YAML azure.workload2.deploy)
+if [ "$ENABLED" = "true" ];
+then
+  echo "Destroying $(yq r $VARS_YAML azure.workload2.clusterName)..."
+  az aks delete --resource-group $(yq r $VARS_YAML azure.workload2.resourceGroup) \
+    --name $(yq r $VARS_YAML azure.workload2.clusterName) --verbose
+else
+  echo "Skipping $(yq r $VARS_YAML azure.workload2.clusterName)"
+fi
 
 #MP
 ENABLED=$(yq r $VARS_YAML gcp.mgmt.deploy)
