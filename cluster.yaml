@@ -2,7 +2,7 @@
 apiVersion: api.tsb.tetrate.io/v2
 kind: Cluster
 metadata:
-  name: gke1-cluster
+  name: xxx
   organization: tetrate
 spec:
   tokenTtl: "10000h"

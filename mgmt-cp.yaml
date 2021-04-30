@@ -15,5 +15,5 @@ spec:
   managementPlane:
     host: xxx
     port: 443
-    clusterName: mgmt-cluster
+    clusterName: xxx
     tenant: tetrate

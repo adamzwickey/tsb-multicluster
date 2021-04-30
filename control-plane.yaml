@@ -1,0 +1,28 @@
+
+---
+apiVersion: install.tetrate.io/v1alpha1
+kind: ControlPlane
+metadata:
+  name: controlplane
+  namespace: istio-system
+spec:
+  components:
+    istio:
+      kubeSpec:
+        overlays:
+          - apiVersion: install.istio.io/v1alpha1
+            kind: IstioOperator
+            name: tsb-istiocontrolplane
+            patches:
+            - path: spec.meshConfig.defaultConfig.proxyMetadata.ISTIO_META_DNS_CAPTURE
+              value: "true""
+  hub: xxx
+  telemetryStore:
+    elastic:
+      host: xxxx
+      port: 443
+  managementPlane:
+    host: xxx
+    port: 443
+    clusterName: xxx
+    tenant: tetrate
