@@ -1,14 +1,16 @@
 # tsb-multicluster
-This project is meant to automate the paving of TSB Multi-cluster environments for common demo scenarios.  At the end of the installation you'll end up with TSB deployed and configured, a sample application deployed across 2 mult-region clusters, a VM integrated into one of the meshes serving app traffic, and a Tier 1 Gateway handling edge ingress and load balancing.  
+This project is meant to automate the paving of TSB Multi-cluster environments for common demo scenarios.  At the end of the installation you'll end up with TSB deployed and configured, a sample application deployed across up to 6 mult-region and multi-cloud clusters, a VM integrated into one of the meshes serving app traffic, and a Tier 1 Gateway handling edge ingress and load balancing.  
 
 It should look like this:
 ![](https://raw.githubusercontent.com/adamzwickey/tsb-multicluster/main/images/demo.png "arch")
 
 ## Prerequisites
-This demo install is opinionated in that it fully utilizes GCP services.  It also makes the following assumptions:
+This demo install is opinionated in that it fully utilizes GCP for core service but can deploy to all 3 major clouds.  It also makes the following assumptions:
 
 - A GCP account key json stored to local disk
 - A GCP Cloud DNS zone created for use in DNS of management and demo application.
+- EKSCTL cli installed.  (if deploying to AWS)
+- Azure `az` CLI installed. (if deploying to Azure)
 - A certificate generated for you application traffic (e.g. a cert, private key, root, and cert-chain)
 - tctl CLI installed
 - Docker installed and logged into your private repository you will utilize for TSB images
@@ -23,7 +25,7 @@ The installation script should be completely idempotent.  There are cases where 
 ```bash
 export VARS_YAML=~/dev/tsb-multicluster/vars.yaml 
 ```
-- Update `vars.yaml` to reflect your GCP environment and desired configuration.
+- Update `vars.yaml` to reflect your cloud environments and desired configuration.
 - Execute the install script
 ```bash
 source ./scripts/install.sh
