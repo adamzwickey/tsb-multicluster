@@ -1,4 +1,3 @@
-
 ---
 apiVersion: install.tetrate.io/v1alpha1
 kind: ControlPlane
@@ -15,7 +14,7 @@ spec:
             name: tsb-istiocontrolplane
             patches:
             - path: spec.meshConfig.defaultConfig.proxyMetadata.ISTIO_META_DNS_CAPTURE
-              value: "true""
+              value: "true"
   hub: xxx
   telemetryStore:
     elastic:
