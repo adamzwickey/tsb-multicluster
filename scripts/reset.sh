@@ -79,3 +79,23 @@ then
 else
   echo "Skipping AWS Workload Cluster 2"
 fi
+
+ENABLED=$(yq r $VARS_YAML azure.workload1.deploy)
+if [ "$ENABLED" = "true" ];
+then
+   aws eks --region $(yq r $VARS_YAML azure.workload1.region) update-kubeconfig \
+    --name $(yq r $VARS_YAML azure.workload1.clusterName) 
+   source ./scripts/reset-t2.sh  
+else
+  echo "Skipping Azure Workload Cluster 1"
+fi
+
+ENABLED=$(yq r $VARS_YAML azure.workload2.deploy)
+if [ "$ENABLED" = "true" ];
+then
+   aws eks --region $(yq r $VARS_YAML azure.workload2.region) update-kubeconfig \
+    --name $(yq r $VARS_YAML azure.workload2.clusterName) 
+   source ./scripts/reset-t2.sh  
+else
+  echo "Skipping Azure Workload Cluster 2"
+fi
