@@ -7,6 +7,16 @@ metadata:
   namespace: istio-system
 spec:
   tier1Cluster: true
+  components:
+    istio:
+      kubeSpec:
+        overlays:
+          - apiVersion: install.istio.io/v1alpha1
+            kind: IstioOperator
+            name: tsb-istiocontrolplane
+            patches:
+            - path: spec.meshConfig.defaultConfig.proxyMetadata.ISTIO_META_DNS_CAPTURE
+              value: "true"
   hub: xxx
   telemetryStore:
     elastic:
