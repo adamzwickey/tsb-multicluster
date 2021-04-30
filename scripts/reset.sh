@@ -46,6 +46,9 @@ kubectl delete -f bookinfo/tmp1.yaml
 sleep 10
 kubectl delete po --selector='app=tsb-tier1'
 
+ENABLED=$(yq r $VARS_YAML gcp.workload1.deploy)
+if [ "$ENABLED" = "true" ];
+then
 gcloud container clusters get-credentials $(yq r $VARS_YAML gcp.workload1.clusterName) \
    --region $(yq r $VARS_YAML gcp.workload1.region) --project $(yq r $VARS_YAML gcp.env)
 export GATEWAY_IP=$(kubectl get service tsb-gateway-bookinfo -n bookinfo -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
@@ -62,7 +65,13 @@ done
 kubectl delete -f bookinfo/tmp.yaml
 kubectl apply -n bookinfo -f bookinfo/bookinfo-multi.yaml
 k delete po -n bookinfo -l app=tsb-gateway-bookinfo
+else
+  echo "Skipping GCP Workload Cluster 1"
+fi
 
+ENABLED=$(yq r $VARS_YAML gcp.workload2.deploy)
+if [ "$ENABLED" = "true" ];
+then
 gcloud container clusters get-credentials $(yq r $VARS_YAML gcp.workload2.clusterName) \
    --region $(yq r $VARS_YAML gcp.workload2.region) --project $(yq r $VARS_YAML gcp.env)
 export GATEWAY_IP=$(kubectl get service tsb-gateway-bookinfo -n bookinfo -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
@@ -79,20 +88,52 @@ done
 kubectl delete -f bookinfo/tmp.yaml
 kubectl apply -n bookinfo -f bookinfo/bookinfo-multi.yaml
 k delete po -n bookinfo -l app=tsb-gateway-bookinfo
+else
+  echo "Skipping GCP Workload Cluster 2"
+fi
 
-aws eks --region us-east-2 update-kubeconfig \
+ENABLED=$(yq r $VARS_YAML aws.workload1.deploy)
+if [ "$ENABLED" = "true" ];
+then
+   aws eks --region $(yq r $VARS_YAML aws.workload1.region) update-kubeconfig \
     --name $(yq r $VARS_YAML aws.workload1.clusterName) 
-export GATEWAY_IP=$(kubectl get service tsb-gateway-bookinfo -n bookinfo -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-kubectl apply -n bookinfo -f bookinfo/bookinfo.yaml
-while kubectl get po -n bookinfo | grep Running | wc -l | grep 7 ; [ $? -ne 0 ]; do
-    echo Bookinfo is not yet ready
-    sleep 5s
-done
-kubectl apply -f bookinfo/tmp.yaml
-for i in {1..50}
-do
-   curl -vv http://$GATEWAY_IP/productpage\?u=normal
-done
-kubectl delete -f bookinfo/tmp.yaml
-kubectl apply -n bookinfo -f bookinfo/bookinfo-multi.yaml
-k delete po -n bookinfo -l app=tsb-gateway-bookinfo
+   export GATEWAY_IP=$(kubectl get service tsb-gateway-bookinfo -n bookinfo -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+   kubectl apply -n bookinfo -f bookinfo/bookinfo.yaml
+   while kubectl get po -n bookinfo | grep Running | wc -l | grep 7 ; [ $? -ne 0 ]; do
+      echo Bookinfo is not yet ready
+      sleep 5s
+   done
+   kubectl apply -f bookinfo/tmp.yaml
+   for i in {1..50}
+   do
+      curl -vv http://$GATEWAY_IP/productpage\?u=normal
+   done
+   kubectl delete -f bookinfo/tmp.yaml
+   kubectl apply -n bookinfo -f bookinfo/bookinfo-multi.yaml
+   k delete po -n bookinfo -l app=tsb-gateway-bookinfo
+else
+  echo "Skipping AWS Workload Cluster 1"
+fi
+
+ENABLED=$(yq r $VARS_YAML aws.workload2.deploy)
+if [ "$ENABLED" = "true" ];
+then
+   aws eks --region $(yq r $VARS_YAML aws.workload1.region) update-kubeconfig \
+    --name $(yq r $VARS_YAML aws.workload1.clusterName) 
+   export GATEWAY_IP=$(kubectl get service tsb-gateway-bookinfo -n bookinfo -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+   kubectl apply -n bookinfo -f bookinfo/bookinfo.yaml
+   while kubectl get po -n bookinfo | grep Running | wc -l | grep 7 ; [ $? -ne 0 ]; do
+      echo Bookinfo is not yet ready
+      sleep 5s
+   done
+   kubectl apply -f bookinfo/tmp.yaml
+   for i in {1..50}
+   do
+      curl -vv http://$GATEWAY_IP/productpage\?u=normal
+   done
+   kubectl delete -f bookinfo/tmp.yaml
+   kubectl apply -n bookinfo -f bookinfo/bookinfo-multi.yaml
+   k delete po -n bookinfo -l app=tsb-gateway-bookinfo
+else
+  echo "Skipping AWS Workload Cluster 2"
+fi

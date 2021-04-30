@@ -240,11 +240,11 @@ spec:
       containers:
       - name: productpage
         image: docker.io/chirauki/productpage
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         ports:
         - containerPort: 9080
         env:
         - name: DETAILS_HOSTNAME
-          value: details.mesh.local
+          value: details.tetrate.mesh
         # - name: RATINGS_HOSTNAME
         #   value: ratings.cx.tetrate.info
