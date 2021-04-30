@@ -3,15 +3,61 @@
 echo config YAML:
 cat $VARS_YAML
 
-echo "Destroying cluster1..."
-gcloud container clusters delete $(yq r $VARS_YAML gcp.workload1.clusterName) \
+#GCP
+ENABLED=$(yq r $VARS_YAML gcp.workload1.deploy)
+if [ "$ENABLED" = "true" ];
+then
+  echo "Destroying $(yq r $VARS_YAML gcp.workload1.clusterName)..."
+  gcloud container clusters delete $(yq r $VARS_YAML gcp.workload1.clusterName) \
    --region $(yq r $VARS_YAML gcp.workload1.region) --quiet
-echo "Destroying cluster2..."
-gcloud container clusters delete $(yq r $VARS_YAML gcp.workload2.clusterName) \
+else
+  echo "Skipping $(yq r $VARS_YAML gcp.workload1.clusterName)"
+fi
+ENABLED=$(yq r $VARS_YAML gcp.workload2.deploy)
+if [ "$ENABLED" = "true" ];
+then
+  echo "Destroying $(yq r $VARS_YAML gcp.workload2.clusterName)..."
+  gcloud container clusters delete $(yq r $VARS_YAML gcp.workload2.clusterName) \
    --region $(yq r $VARS_YAML gcp.workload2.region) --quiet
-echo "Destroying mgmt cluster..."
-gcloud container clusters delete $(yq r $VARS_YAML gcp.mgmt.clusterName) \
+else
+  echo "Skipping $(yq r $VARS_YAML gcp.workload2.clusterName)"
+fi
+
+#AWS
+ENABLED=$(yq r $VARS_YAML aws.workload1.deploy)
+if [ "$ENABLED" = "true" ];
+then
+  echo "Destroying $(yq r $VARS_YAML aws.workload1.clusterName)..."
+  rapture assume tetrate-test/admin
+  eksctl delete cluster --region $(yq r $VARS_YAML aws.workload1.region) \
+    --name $(yq r $VARS_YAML aws.workload1.clusterName)
+else
+  echo "Skipping $(yq r $VARS_YAML aws.workload1.clusterName)"
+fi
+ENABLED=$(yq r $VARS_YAML aws.workload2.deploy)
+if [ "$ENABLED" = "true" ];
+then
+  echo "Destroying $(yq r $VARS_YAML aws.workload2.clusterName)..."
+  rapture assume tetrate-test/admin
+  eksctl delete cluster --region $(yq r $VARS_YAML aws.workload2.region) \
+    --name $(yq r $VARS_YAML aws.workload2.clusterName)
+else
+  echo "Skipping $(yq r $VARS_YAML aws.workload2.clusterName)"
+fi
+
+#AZURE
+
+#MP
+ENABLED=$(yq r $VARS_YAML gcp.mgmt.deploy)
+if [ "$ENABLED" = "true" ];
+then
+  echo "Destroying $(yq r $VARS_YAML gcp.mgmt.clusterName)..."
+  gcloud container clusters delete $(yq r $VARS_YAML gcp.mgmt.clusterName) \
    --region $(yq r $VARS_YAML gcp.mgmt.region) --quiet
+else
+  echo "Skipping Mgmt Plane"
+fi
+
 gcloud beta compute --project=$(yq r $VARS_YAML gcp.env) instances delete $(yq r $VARS_YAML gcp.vm.name) \
   --zone=$(yq r $VARS_YAML gcp.vm.networkZone) --quiet
 rm -rf ~/.ssh/known_hosts

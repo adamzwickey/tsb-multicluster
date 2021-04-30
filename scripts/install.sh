@@ -8,7 +8,7 @@ if [ "$DEPLOY_MP" = "true" ];
 then
   echo "Deploying Management Plane"
   source ./scripts/install-mp.sh
-  
+  tctl apply -f bookinfo/workspace.yaml
 else
   echo "Skipping Management Plane"
 fi
