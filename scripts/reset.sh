@@ -63,9 +63,10 @@ fi
 ENABLED=$(yq r $VARS_YAML aws.workload1.deploy)
 if [ "$ENABLED" = "true" ];
 then
+   rapture assume tetrate-test/admin
    aws eks --region $(yq r $VARS_YAML aws.workload1.region) update-kubeconfig \
     --name $(yq r $VARS_YAML aws.workload1.clusterName) 
-   source ./scripts/reset-t2.sh  
+   source ./scripts/reset-aws-t2.sh  
 else
   echo "Skipping AWS Workload Cluster 1"
 fi
@@ -73,9 +74,10 @@ fi
 ENABLED=$(yq r $VARS_YAML aws.workload2.deploy)
 if [ "$ENABLED" = "true" ];
 then
+   rapture assume tetrate-test/admin
    aws eks --region $(yq r $VARS_YAML aws.workload2.region) update-kubeconfig \
     --name $(yq r $VARS_YAML aws.workload2.clusterName) 
-   source ./scripts/reset-t2.sh  
+   source ./scripts/reset-aws-t2.sh  
 else
   echo "Skipping AWS Workload Cluster 2"
 fi
@@ -83,8 +85,8 @@ fi
 ENABLED=$(yq r $VARS_YAML azure.workload1.deploy)
 if [ "$ENABLED" = "true" ];
 then
-   aws eks --region $(yq r $VARS_YAML azure.workload1.region) update-kubeconfig \
-    --name $(yq r $VARS_YAML azure.workload1.clusterName) 
+   az aks get-credentials --resource-group $(yq r $VARS_YAML azure.workload1.resourceGroup)\
+    --name $(yq r $VARS_YAML azure.workload1.clusterName)
    source ./scripts/reset-t2.sh  
 else
   echo "Skipping Azure Workload Cluster 1"
@@ -93,8 +95,8 @@ fi
 ENABLED=$(yq r $VARS_YAML azure.workload2.deploy)
 if [ "$ENABLED" = "true" ];
 then
-   aws eks --region $(yq r $VARS_YAML azure.workload2.region) update-kubeconfig \
-    --name $(yq r $VARS_YAML azure.workload2.clusterName) 
+   az aks get-credentials --resource-group $(yq r $VARS_YAML azure.workload2.resourceGroup)\
+    --name $(yq r $VARS_YAML azure.workload2.clusterName)
    source ./scripts/reset-t2.sh  
 else
   echo "Skipping Azure Workload Cluster 2"
