@@ -4,7 +4,7 @@
 export GATEWAY_IP=$(kubectl get service tsb-gateway-bookinfo -n bookinfo -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
 kubectl apply -n bookinfo -f bookinfo/bookinfo.yaml
 sleep 5s
-while kubectl get po -n bookinfo | grep Running | wc -l | grep 7 ; [ $? -ne 0 ]; do
+while kubectl get po -n bookinfo -l app=productpage | grep Running | wc -l | grep 1 ; [ $? -ne 0 ]; do
     echo Bookinfo is not yet ready
     sleep 5s
 done

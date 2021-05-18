@@ -1,0 +1,137 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: test-proxy
+  namespace: default
+  labels:
+    app: test-proxy
+spec:
+  ports:
+  - port: 8888
+    name: http
+  selector:
+    app: test-proxy
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-proxy
+  namespace: default
+  labels:
+    app: test-proxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: test-proxy
+  template:
+    metadata:
+      labels:
+        app: test-proxy
+    spec:
+      containers:
+      - name: test-proxy
+        image: gcr.io/abz-env/frontend-demo:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8888
+        env:
+        - name: PORT
+          value: "8888"
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: test-proxy
+  namespace: bookinfo
+  labels:
+    app: test-proxy
+spec:
+  ports:
+  - port: 8888
+    name: http
+  selector:
+    app: test-proxy
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-proxy
+  namespace: bookinfo
+  labels:
+    app: test-proxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: test-proxy
+  template:
+    metadata:
+      labels:
+        app: test-proxy
+    spec:
+      containers:
+      - name: test-proxy
+        image: gcr.io/abz-env/frontend-demo:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8888
+        env:
+        - name: PORT
+          value: "8888"
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: test-proxy
+  namespace: todos
+  labels:
+    app: test-proxy
+spec:
+  ports:
+  - port: 8888
+    name: http
+  selector:
+    app: test-proxy
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-proxy
+  namespace: todos
+  labels:
+    app: test-proxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: test-proxy
+  template:
+    metadata:
+      labels:
+        app: test-proxy
+    spec:
+      containers:
+      - name: test-proxy
+        image: gcr.io/abz-env/frontend-demo:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8888
+        env:
+        - name: PORT
+          value: "8888"
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace

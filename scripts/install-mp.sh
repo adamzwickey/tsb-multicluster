@@ -55,7 +55,8 @@ done
 tctl install manifest management-plane-secrets \
     --elastic-password tsb-elastic-password --elastic-username tsb \
     --ldap-bind-dn cn=admin,dc=tetrate,dc=io --ldap-bind-password admin \
-    --postgres-password tsb-postgres-password --postgres-username tsb \
+    --postgres-password $(yq r $VARS_YAML gcp.mgmt.postgres.password) \
+    --postgres-username $(yq r $VARS_YAML gcp.mgmt.postgres.username) \
     --tsb-admin-password $(yq r $VARS_YAML gcp.mgmt.password) --tsb-server-certificate aaa --tsb-server-key bbb \
     --xcp-certs > generated/$(yq r $VARS_YAML gcp.mgmt.clusterName)/mp-secrets.yaml
 #We're not going to use tsb cert since we already have one we're generating from cert-manager
@@ -66,6 +67,7 @@ echo "Deploying mgmt plane"
 sleep 10 # Dig into why this is needed
 cp mgmt-mp.yaml generated/$(yq r $VARS_YAML gcp.mgmt.clusterName)/mp.yaml
 yq write generated/$(yq r $VARS_YAML gcp.mgmt.clusterName)/mp.yaml -i "spec.hub" $(yq r $VARS_YAML tetrate.registry)
+yq write generated/$(yq r $VARS_YAML gcp.mgmt.clusterName)/mp.yaml -i "spec.dataStore.postgres.host" $(yq r $VARS_YAML gcp.mgmt.postgres.host)
 kubectl apply -f generated/$(yq r $VARS_YAML gcp.mgmt.clusterName)/mp.yaml
 #Central is last component to start up
 while kubectl get po -n tsb -l app=central | grep Running | wc -l | grep 1 ; [ $? -ne 0 ]; do

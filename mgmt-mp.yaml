@@ -12,3 +12,9 @@ spec:
       teamSyncSchedule: 0 * * * *
     frontEnvoy:
       port: 443
+  dataStore:
+    postgres:
+      host: xxx
+      port: 5432
+      name: postgres
+      sslMode: prefer
