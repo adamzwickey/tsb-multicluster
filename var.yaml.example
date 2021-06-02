@@ -24,6 +24,10 @@ gcp:
     password: xxx
     network: projects/abz-env/global/networks/demo
     subNetwork: projects/abz-env/regions/us-east1/subnetworks/demo
+    postgres:
+      username: postgres
+      password: xxxx
+      host: 192.168.1.1
   workload1:
     deploy: true
     clusterName: xxxx
