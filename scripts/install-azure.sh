@@ -45,8 +45,8 @@ then
     $(yq r $VARS_YAML azure.workload2.clusterName) \
     $(yq r $VARS_YAML azure.workload2.region)
   #Change context back
-  az aks get-credentials --resource-group $(yq r $VARS_YAML azure.workload1.resourceGroup)\
-    --name $(yq r $VARS_YAML azure.workload1.clusterName)
+  az aks get-credentials --resource-group $(yq r $VARS_YAML azure.workload2.resourceGroup)\
+    --name $(yq r $VARS_YAML azure.workload2.clusterName)
   source ./scripts/deploy-cp.sh \
     $(yq r $VARS_YAML azure.workload2.clusterName) 
   source ./scripts/deploy-bookinfo.sh

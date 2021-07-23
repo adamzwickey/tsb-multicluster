@@ -25,7 +25,7 @@ gcloud container clusters get-credentials $(yq r $VARS_YAML gcp.mgmt.clusterName
 echo "Installing TSB mgmt cluster..."
 mkdir -p generated/$(yq r $VARS_YAML gcp.mgmt.clusterName)
 
-kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.3.1/cert-manager.yaml
+kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.4.0/cert-manager.yaml
 kubectl create secret generic clouddns-dns01-solver-svc-acct -n cert-manager \
     --from-file=$(yq r $VARS_YAML gcp.accountJsonKey)
 while kubectl get po -n cert-manager | grep Running | wc -l | grep 3 ; [ $? -ne 0 ]; do
@@ -57,7 +57,7 @@ tctl install manifest management-plane-secrets \
     --ldap-bind-dn cn=admin,dc=tetrate,dc=io --ldap-bind-password admin \
     --postgres-password $(yq r $VARS_YAML gcp.mgmt.postgres.password) \
     --postgres-username $(yq r $VARS_YAML gcp.mgmt.postgres.username) \
-    --tsb-admin-password $(yq r $VARS_YAML gcp.mgmt.password) --tsb-server-certificate aaa --tsb-server-key bbb \
+    --tsb-admin-password $(yq r $VARS_YAML gcp.mgmt.password)  --allow-defaults \
     --xcp-certs > generated/$(yq r $VARS_YAML gcp.mgmt.clusterName)/mp-secrets.yaml
 #We're not going to use tsb cert since we already have one we're generating from cert-manager
 sed -i '' s/tsb-certs/tsb-cert-old/ generated/$(yq r $VARS_YAML gcp.mgmt.clusterName)/mp-secrets.yaml 
