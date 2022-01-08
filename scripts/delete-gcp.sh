@@ -4,25 +4,27 @@ echo config YAML:
 cat $VARS_YAML
 
 #GCP
-ENABLED=$(yq r $VARS_YAML gcp.workload1.deploy)
+ENABLED=$(yq eval .gcp.workload1.deploy $VARS_YAML)
 if [ "$ENABLED" = "true" ];
 then
-  echo "Destroying $(yq r $VARS_YAML gcp.workload1.clusterName)..."
-  gcloud container clusters delete $(yq r $VARS_YAML gcp.workload1.clusterName) \
-   --region $(yq r $VARS_YAML gcp.workload1.region) --quiet
+  echo "Destroying $(yq eval .gcp.workload1.clusterName $VARS_YAML)..."
+  gcloud container clusters delete $(yq eval .gcp.workload1.clusterName $VARS_YAML) \
+   --region $(yq eval .gcp.workload1.region $VARS_YAML) --quiet
+  tctl delete -f generated/$(yq eval .gcp.workload1.clusterName $VARS_YAML)/cluster.yaml
 else
-  echo "Skipping $(yq r $VARS_YAML gcp.workload1.clusterName)"
+  echo "Skipping $(yq eval .gcp.workload1.clusterName $VARS_YAML)"
 fi
-ENABLED=$(yq r $VARS_YAML gcp.workload2.deploy)
+ENABLED=$(yq eval .gcp.workload2.deploy $VARS_YAML)
 if [ "$ENABLED" = "true" ];
 then
-  echo "Destroying $(yq r $VARS_YAML gcp.workload2.clusterName)..."
-  gcloud container clusters delete $(yq r $VARS_YAML gcp.workload2.clusterName) \
-   --region $(yq r $VARS_YAML gcp.workload2.region) --quiet
+  echo "Destroying $(yq eval .gcp.workload2.clusterName $VARS_YAML)..."
+  gcloud container clusters delete $(yq eval .gcp.workload2.clusterName $VARS_YAML) \
+   --region $(yq eval .gcp.workload2.region $VARS_YAML) --quiet
+  tctl delete -f generated/$(yq eval .gcp.workload2.clusterName $VARS_YAML)/cluster.yaml
 else
-  echo "Skipping $(yq r $VARS_YAML gcp.workload2.clusterName)"
+  echo "Skipping $(yq eval .gcp.workload2.clusterName $VARS_YAML)"
 fi
 
-gcloud beta compute --project=$(yq r $VARS_YAML gcp.env) instances delete $(yq r $VARS_YAML gcp.vm.name) \
-  --zone=$(yq r $VARS_YAML gcp.vm.networkZone) --quiet
+gcloud beta compute --project=$(yq eval .gcp.env $VARS_YAML) instances delete $(yq eval .gcp.vm.name $VARS_YAML) \
+  --zone=$(yq eval .gcp.vm.networkZone $VARS_YAML) --quiet
 rm -rf ~/.ssh/known_hosts

@@ -13,12 +13,12 @@ source ./scripts/delete-aws.sh
 source ./scripts/delete-azure.sh
 
 #MP
-ENABLED=$(yq r $VARS_YAML gcp.mgmt.deploy)
+ENABLED=$(yq eval .gcp.mgmt.deploy $VARS_YAML)
 if [ "$ENABLED" = "true" ];
 then
-  echo "Destroying $(yq r $VARS_YAML gcp.mgmt.clusterName)..."
-  gcloud container clusters delete $(yq r $VARS_YAML gcp.mgmt.clusterName) \
-   --region $(yq r $VARS_YAML gcp.mgmt.region) --quiet
+  echo "Destroying $(yq eval .gcp.mgmt.clusterName $VARS_YAML)..."
+  gcloud container clusters delete $(yq eval .gcp.mgmt.clusterName $VARS_YAML) \
+   --region $(yq eval .gcp.mgmt.region $VARS_YAML) --quiet
 else
   echo "Skipping Mgmt Plane"
 fi
