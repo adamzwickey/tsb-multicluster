@@ -5,23 +5,23 @@ ENABLED=$(yq r $VARS_YAML azure.workload1.deploy)
 if [ "$ENABLED" = "true" ];
 then
   echo "Deploying Azure Workload Cluster 1"
-  az account set --subscription $(yq r $VARS_YAML azure.subscription)
+  az account set --subscription $(yq e .azure.subscription $VARS_YAML)
   az login
-  az group create --name $(yq r $VARS_YAML azure.workload1.resourceGroup) \
-    --location $(yq r $VARS_YAML azure.workload1.region)
-  az aks create --resource-group $(yq r $VARS_YAML azure.workload1.resourceGroup) \
-    --name $(yq r $VARS_YAML azure.workload1.clusterName) \
+  az group create --name $(yq e .azure.workload1.resourceGroup $VARS_YAML) \
+    --location $(yq e .azure.workload1.region $VARS_YAML)
+  az aks create --resource-group $(yq e .azure.workload1.resourceGroup $VARS_YAML) \
+    --name $(yq e .azure.workload1.clusterName $VARS_YAML) \
     --min-count 2 --max-count 6 --enable-cluster-autoscaler \
     --node-vm-size Standard_B4ms
   
   source ./scripts/onboard-to-mp.sh \
-    $(yq r $VARS_YAML azure.workload1.clusterName) \
-    $(yq r $VARS_YAML azure.workload1.region)
+    $(yq e .azure.workload1.clusterName $VARS_YAML) \
+    $(yq e .azure.workload1.region $VARS_YAML)
   #Change context back
-  az aks get-credentials --resource-group $(yq r $VARS_YAML azure.workload1.resourceGroup)\
-    --name $(yq r $VARS_YAML azure.workload1.clusterName)
+  az aks get-credentials --resource-group $(yq e .azure.workload1.resourceGroup $VARS_YAML)\
+    --name $(yq e .azure.workload1.clusterName $VARS_YAML)
   source ./scripts/deploy-cp.sh \
-    $(yq r $VARS_YAML azure.workload1.clusterName) 
+    $(yq e .azure.workload1.clusterName $VARS_YAML) 
   source ./scripts/deploy-bookinfo.sh
   
 else
@@ -32,23 +32,23 @@ ENABLED=$(yq r $VARS_YAML azure.workload2.deploy)
 if [ "$ENABLED" = "true" ];
 then
   echo "Deploying Azure Workload Cluster 2"
-  az account set --subscription $(yq r $VARS_YAML azure.subscription)
+  az account set --subscription $(yq e .azure.subscription $VARS_YAML)
   az login
-  az group create --name $(yq r $VARS_YAML azure.workload2.resourceGroup) \
-    --location $(yq r $VARS_YAML azure.workload2.region)
-  az aks create --resource-group $(yq r $VARS_YAML azure.workload2.resourceGroup) \
-    --name $(yq r $VARS_YAML azure.workload2.clusterName) \
+  az group create --name $(yq e .azure.workload2.resourceGroup $VARS_YAML) \
+    --location $(yq e .azure.workload2.region $VARS_YAML)
+  az aks create --resource-group $(yq e .azure.workload2.resourceGroup $VARS_YAML) \
+    --name $(yq e .azure.workload2.clusterName $VARS_YAML) \
     --min-count 2 --max-count 6 --enable-cluster-autoscaler \
     --node-vm-size Standard_B4ms
-
+  
   source ./scripts/onboard-to-mp.sh \
-    $(yq r $VARS_YAML azure.workload2.clusterName) \
-    $(yq r $VARS_YAML azure.workload2.region)
+    $(yq e .azure.workload2.clusterName $VARS_YAML) \
+    $(yq e .azure.workload2.region $VARS_YAML)
   #Change context back
-  az aks get-credentials --resource-group $(yq r $VARS_YAML azure.workload2.resourceGroup)\
-    --name $(yq r $VARS_YAML azure.workload2.clusterName)
+  az aks get-credentials --resource-group $(yq e .azure.workload2.resourceGroup $VARS_YAML)\
+    --name $(yq e .azure.workload2.clusterName $VARS_YAML)
   source ./scripts/deploy-cp.sh \
-    $(yq r $VARS_YAML azure.workload2.clusterName) 
+    $(yq e .azure.workload2.clusterName $VARS_YAML) 
   source ./scripts/deploy-bookinfo.sh
 else
   echo "Skipping Azure Workload Cluster 2"

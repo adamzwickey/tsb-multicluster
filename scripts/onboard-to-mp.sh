@@ -3,18 +3,18 @@
 : ${1?"Must supply cluster name arg"}
 : ${2?"Must supply cluster region arg"}
 
-CLUSTER_NAME=$1
-REGION=$2
+export CLUSTER_NAME=$1
+export REGION=$2
 mkdir -p generated/$CLUSTER_NAME
 
-echo "Onboarding Workload Cluster $CLUSTER_NAME to Management Plane"
-gcloud container clusters get-credentials $(yq r $VARS_YAML gcp.mgmt.clusterName) \
-   --region $(yq r $VARS_YAML gcp.mgmt.region) --project $(yq r $VARS_YAML gcp.env)
+echo "Onboarding Workload Cluster $CLUSTER_NAME to Management Plane; Region: $REGION"
+gcloud container clusters get-credentials $(yq eval .gcp.mgmt.clusterName $VARS_YAML) \
+   --region $(yq eval .gcp.mgmt.region $VARS_YAML) --project $(yq eval .gcp.env $VARS_YAML)
 tctl install manifest cluster-operator \
-  --registry $(yq r $VARS_YAML tetrate.registry) > generated/$CLUSTER_NAME/cp-operator.yaml
+  --registry $(yq eval .tetrate.registry $VARS_YAML) > generated/$CLUSTER_NAME/cp-operator.yaml
 cp cluster.yaml generated/$CLUSTER_NAME/
-yq write generated/$CLUSTER_NAME/cluster.yaml -i "spec.locality.region" $REGION
-yq write generated/$CLUSTER_NAME/cluster.yaml -i "metadata.name" $CLUSTER_NAME
+yq e -i '.spec.locality.region=strenv(REGION) |
+        .metadata.name=strenv(CLUSTER_NAME)' generated/$CLUSTER_NAME/cluster.yaml
 tctl apply -f generated/$CLUSTER_NAME/cluster.yaml
 tctl install cluster-certs --cluster $CLUSTER_NAME > generated/$CLUSTER_NAME/cluster-certs.yaml
 tctl install manifest control-plane-secrets --cluster $CLUSTER_NAME \
